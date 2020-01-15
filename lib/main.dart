@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note_taking_app/db/Notes.dart';
 import 'package:sqflite/sqflite.dart';
 
 void main() => runApp(MyApp());
@@ -40,18 +41,34 @@ class _MyHomePage extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddNoteDialog();
-          //Navigator.push(context, MaterialPageRoute(builder: (context)=>AddPage()));
         },
         tooltip: 'add note',
         child: Icon(Icons.add),
       ),
+      body: FutureBuilder<List<Note>>(
+        future: NotesProvider().data,
+        builder: (BuildContext context, AsyncSnapshot<List<Note>>snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                Note note = snapshot.data[index];
+                return ListTile(
+                  title: Text(note.title),
+                  trailing: Checkbox(
+                    onChanged: (bool value) {
+                      setState(() {});
+                    },
+                    value: note.done,
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 
-  void _inputDataInDb(String note){
-//      var databasesPath = await getDatabasesPath();
-
-  }
 
   void _showAddNoteDialog() {
     showDialog(
@@ -72,10 +89,8 @@ class _MyHomePage extends State<MyHomePage> {
               FlatButton(
                 child: Text("Save"),
                 onPressed: () {
-
                   String note = textController.text;
 
-                  _inputDataInDb(note);
 
                   Navigator.of(context).pop();
                 },
@@ -84,10 +99,6 @@ class _MyHomePage extends State<MyHomePage> {
           );
         }
     );
-
-
-
-
   }
 
 
