@@ -1,5 +1,9 @@
 
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 const String tableNotes = "notes";
@@ -16,7 +20,24 @@ class Note{
   String added_date;
   bool done;
 
-  Note({this.title,this.added_date,this.done});
+  Note({this.id,this.title,this.added_date,this.done});
+
+
+  factory Note.fromMap(Map<String,dynamic>json) => new Note(
+    id:json[columnId],
+    title: json[columnTitle],
+    added_date:json[columnAddedDateText],
+    done:json[columnDone] == 1 ,
+  );
+
+  Map<String,dynamic> toMap() => {
+    columnId:id,
+    columnTitle:title,
+    columnDone:done,
+    columnAddedDateText:added_date
+  };
+
+
 
 }
 
@@ -25,10 +46,15 @@ class NotesProvider{
 
   Database db;
 
-  Future open(String path) async{
+  Future open() async{
+
+    Directory documentDir = await getApplicationDocumentsDirectory();
+
+    String path = documentDir.path+"/flutter_note_taking_appDB01.db";
 
     db = await openDatabase(path,version: 1,onCreate: (Database db,int version)async{
         await db.execute('''  
+          create table $tableNotes(
           $columnId integer primary key autoincrement,
           $columnTitle text not null,
           $columnDone integer not null,
@@ -49,6 +75,24 @@ class NotesProvider{
     await batch.commit(noResult: true);
   }
 
+  Future<int> delete(int id)async{
+    return await db.delete(tableNotes,where: '$columnId = ?',whereArgs: [id]);
+  }
+
+  getAllNotes() async {
+
+    var res = await db.query(tableNotes);
+
+    List<Note> notes = res.isEmpty ? res.asMap((c) => Note. )
+
+
+
+
+
+
+  }
+
+  Future close() async => db.close();
 
 
 
