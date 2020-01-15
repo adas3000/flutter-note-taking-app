@@ -61,6 +61,9 @@ class NotesProvider {
   }
 
   Future<Note> insert(Note note) async {
+
+    await open();
+
     String title = note.title;
     bool done = note.done;
     String added_date = note.added_date;
@@ -79,7 +82,8 @@ class NotesProvider {
     return await db.delete(tableNotes, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  getAllNotes() async {
+
+  Future<List<Note>> get getAllNotes async{
 
     var res = await db.query(tableNotes);
 
@@ -87,6 +91,7 @@ class NotesProvider {
         ? res.toList().map((c) => Note.fromMap(c)) : [];
     return list;
   }
+
 
   Future<List<Note>> get data async{
     List<Note> list = List();

@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePage extends State<MyHomePage> {
 
   final TextEditingController textController = TextEditingController();
+  bool checked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _MyHomePage extends State<MyHomePage> {
         child: Icon(Icons.add),
       ),
       body: FutureBuilder<List<Note>>(
-        future: NotesProvider().data,
+        future: NotesProvider().getAllNotes,
         builder: (BuildContext context, AsyncSnapshot<List<Note>>snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(itemCount: snapshot.data.length,
@@ -56,14 +57,16 @@ class _MyHomePage extends State<MyHomePage> {
                   title: Text(note.title),
                   trailing: Checkbox(
                     onChanged: (bool value) {
+                      checked = value;
                       setState(() {});
                     },
-                    value: note.done,
+                    value: checked,
                   ),
                 );
               },
             );
           }
+          else return Center(child:CircularProgressIndicator());
         },
       ),
     );
@@ -91,6 +94,12 @@ class _MyHomePage extends State<MyHomePage> {
                 onPressed: () {
                   String note = textController.text;
 
+                  Note _note = Note();
+                  _note.done = false;
+                  _note.added_date = "yesterday";
+                  _note.title = "Buy Milk";
+
+                  //NotesProvider().insert(_note);
 
                   Navigator.of(context).pop();
                 },
