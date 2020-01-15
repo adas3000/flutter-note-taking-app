@@ -1,13 +1,13 @@
 import 'dart:io';
-
+import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-const String tableNotes = "notes";
-const String columnId = "_id";
-const String columnTitle = "title";
-const String columnDone = "done";
-const String columnAddedDateText = "_added_date";
+final String tableNotes = "notes";
+final String columnId = "_id";
+final String columnTitle = "title";
+final String columnDone = "done";
+final String columnAddedDateText = "_added_date";
 
 
 class Note {
@@ -62,7 +62,6 @@ class NotesProvider {
 
   Future<Note> insert(Note note) async {
 
-    await open();
 
     String title = note.title;
     bool done = note.done;
@@ -76,10 +75,6 @@ class NotesProvider {
     });
 
     await batch.commit(noResult: true);
-  }
-
-  Future<int> delete(int id) async {
-    return await db.delete(tableNotes, where: '$columnId = ?', whereArgs: [id]);
   }
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note_taking_app/db/Database.dart';
 import 'package:flutter_note_taking_app/db/Notes.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -47,7 +48,7 @@ class _MyHomePage extends State<MyHomePage> {
         child: Icon(Icons.add),
       ),
       body: FutureBuilder<List<Note>>(
-        future: NotesProvider().getAllNotes,
+        future: DBProvider.db.getAllNotes,
         builder: (BuildContext context, AsyncSnapshot<List<Note>>snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(itemCount: snapshot.data.length,
@@ -99,7 +100,7 @@ class _MyHomePage extends State<MyHomePage> {
                   _note.added_date = "yesterday";
                   _note.title = "Buy Milk";
 
-                  //NotesProvider().insert(_note);
+                  DBProvider.db.insert(_note);
 
                   Navigator.of(context).pop();
                 },
